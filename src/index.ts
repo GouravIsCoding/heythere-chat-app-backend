@@ -1,13 +1,14 @@
 import path from "path";
 import authRouter from "./routes/auth/index";
 import houseRouter from "./routes/house/index";
+import memberRouter from "./routes/member/index";
 import { config } from "dotenv";
 config({ path: path.resolve(__dirname, "../.env") });
 import { WebSocketServer, WebSocket } from "ws";
 import cors from "cors";
 const PORT = 8080;
 
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { Server } from "http";
 import { JwtPayload, verify } from "jsonwebtoken";
 import { Env } from "./config";
@@ -29,6 +30,12 @@ app.use(cookieParser());
 
 app.use("/auth", authRouter);
 app.use("/house", houseRouter);
+app.use("/member", memberRouter);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+  return res.status(500).json({ message: "something went wrong" });
+});
 
 const server = app.listen(PORT, () => console.log(`Listening on Port ${PORT}`));
 

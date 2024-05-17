@@ -1,24 +1,19 @@
 import { Router } from "express";
 import { ZodError } from "zod";
-
-import { createHouseDb, destroyHouseDb } from "../../db/house";
-import { createHouse } from "../../validators/createHouse";
-import { destroyHouse } from "../../validators/destroyHouse";
+import { updateMemberInHouse } from "../../validators/updateMembers";
+import { addMemberToHouse, removeMemberFromHouse } from "../../db/member";
 import { authMiddleware } from "../../middleware/auth";
 
 const router = Router();
 
 router.post("/add", authMiddleware, async (req, res) => {
   try {
-    createHouse.parse(req.body);
+    updateMemberInHouse.parse(req.body);
     const { userId } = res.locals;
 
-    const house = await createHouseDb(
-      userId,
-      req.body.name,
-      req.body.description
-    );
-    return res.json({ message: "House created succesfully", ...house });
+    await addMemberToHouse(userId, req.body.houseId);
+
+    return res.json({ message: "succesfully joined the House" });
   } catch (error) {
     if (error instanceof ZodError) {
       return res.status(400).json({ error: error.errors[0]?.message });
@@ -32,10 +27,12 @@ router.post("/add", authMiddleware, async (req, res) => {
 
 router.post("/remove", authMiddleware, async (req, res) => {
   try {
-    const data = destroyHouse.parse(req.body);
+    updateMemberInHouse.parse(req.body);
     const { userId } = res.locals;
-    const house = await destroyHouseDb(userId, data.houseId);
-    return res.json({ message: "House destroyed succesfully", ...house });
+
+    await removeMemberFromHouse(userId, req.body.houseId);
+
+    return res.json({ message: "Left the House" });
   } catch (error) {
     if (error instanceof ZodError) {
       return res.status(400).json({ error: error.errors[0]?.message });

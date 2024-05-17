@@ -1,5 +1,5 @@
 import { z } from "zod";
 
-export const updateMemberInHouse = z.object({
+export const destroyHouse = z.object({
   houseId: z.string().uuid({ message: "Invalid houseId" }),
 });

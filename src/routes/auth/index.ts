@@ -90,7 +90,7 @@ router.post("/signout", async (req, res) => {
     }
   }
 });
-router.post("/status", async (req, res) => {
+router.get("/status", async (req, res) => {
   try {
     const token = req.cookies.token;
     if (!token)

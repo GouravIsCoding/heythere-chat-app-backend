@@ -34,6 +34,21 @@ export const createHouseDb = async (
   }
 };
 
+export const destroyHouseDb = async (userId: string, houseId: string) => {
+  try {
+    const house = await prisma.house.delete({
+      where: {
+        id: houseId,
+        adminId: userId,
+      },
+    });
+
+    return house;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const checkUserHouse = async (userId: string, houseId: string) => {
   try {
     const user = await prisma.userHouse.findFirst({
@@ -43,39 +58,6 @@ export const checkUserHouse = async (userId: string, houseId: string) => {
       },
     });
     return user ? true : false;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const addMemberToHouse = async (userId: string, houseId: string) => {
-  try {
-    await prisma.userHouse.create({
-      data: {
-        userId,
-        houseId,
-      },
-    });
-    return true;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const removeMemberFromHouse = async (
-  userId: string,
-  houseId: string
-) => {
-  try {
-    await prisma.userHouse.delete({
-      where: {
-        userId_houseId: {
-          userId,
-          houseId,
-        },
-      },
-    });
-    return true;
   } catch (error) {
     throw error;
   }
