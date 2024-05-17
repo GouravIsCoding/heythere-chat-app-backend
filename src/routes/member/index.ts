@@ -1,10 +1,34 @@
 import { Router } from "express";
 import { ZodError } from "zod";
 import { updateMemberInHouse } from "../../validators/updateMembers";
-import { addMemberToHouse, removeMemberFromHouse } from "../../db/member";
+import {
+  addMemberToHouse,
+  getMemberById,
+  removeMemberFromHouse,
+} from "../../db/member";
 import { authMiddleware } from "../../middleware/auth";
 
 const router = Router();
+
+router.get("/:memberId", authMiddleware, async (req, res) => {
+  try {
+    const { memberId } = req.params;
+
+    const user = await getMemberById(memberId);
+
+    if (!user) res.status(400).json({ message: "user not found" });
+
+    res.json({ message: "user found", ...user });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({ error: error.errors[0]?.message });
+    }
+    if (error instanceof Error) {
+      console.log(error);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+});
 
 router.post("/add", authMiddleware, async (req, res) => {
   try {

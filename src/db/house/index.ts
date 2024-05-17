@@ -62,3 +62,42 @@ export const checkUserHouse = async (userId: string, houseId: string) => {
     throw error;
   }
 };
+
+export const checkHouseDb = async (houseName: string) => {
+  try {
+    const house = await prisma.house.findFirst({
+      where: {
+        name: houseName,
+      },
+    });
+
+    return house ? true : false;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getHouseDb = async (houseId: string) => {
+  try {
+    const house = await prisma.house.findUnique({
+      where: {
+        id: houseId,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        admin: {
+          select: {
+            firstname: true,
+            lastname: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return house;
+  } catch (error) {
+    throw error;
+  }
+};
