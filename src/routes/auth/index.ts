@@ -40,7 +40,7 @@ router.post("/signin", async (req, res) => {
     if (!fetchedUser)
       return res.status(400).json({ message: "wrong credentials" });
 
-    const validPassword = comparePasswords(
+    const validPassword = await comparePasswords(
       req.body.password,
       fetchedUser?.password
     );

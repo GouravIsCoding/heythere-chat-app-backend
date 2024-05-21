@@ -6,6 +6,7 @@ import {
   createHouseDb,
   destroyHouseDb,
   getHouseDb,
+  getHousesByPage,
 } from "../../db/house";
 import { createHouse } from "../../validators/createHouse";
 import { destroyHouse } from "../../validators/destroyHouse";
@@ -14,7 +15,28 @@ import { checkHouse } from "../../validators/checkHouse";
 
 const router = Router();
 
-router.get("/check", async (req, res) => {
+router.get("/all", authMiddleware, async (req, res) => {
+  try {
+    const { userId } = res.locals;
+    const page = Number(req.query.page);
+
+    const houses = await getHousesByPage(userId, page);
+
+    res.json({
+      message: "Houses List",
+      houses,
+      nextCursor: page + 1,
+      prevCursor: page - 1,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+});
+
+router.post("/check", async (req, res) => {
   try {
     checkHouse.parse(req.body);
 
@@ -85,9 +107,6 @@ router.get("/:houseId", async (req, res) => {
 
     return res.json({ message: "House found!", ...house });
   } catch (error) {
-    if (error instanceof ZodError) {
-      return res.status(400).json({ error: error.errors[0]?.message });
-    }
     if (error instanceof Error) {
       console.log(error);
       return res.status(500).json({ error: "Something went wrong" });

@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const ItemsInPage = 4;
+
 export const createHouseDb = async (
   adminId: string,
   name: string,
@@ -97,6 +99,22 @@ export const getHouseDb = async (houseId: string) => {
     });
 
     return house;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getHousesByPage = async (adminId: string, page: number) => {
+  try {
+    const houses = await prisma.house.findMany({
+      where: {
+        adminId,
+      },
+      skip: ItemsInPage * (page - 1),
+      take: ItemsInPage,
+    });
+
+    return houses;
   } catch (error) {
     throw error;
   }
