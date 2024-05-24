@@ -97,11 +97,12 @@ router.post("/remove", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/:houseId", async (req, res) => {
+router.get("/:houseId", authMiddleware, async (req, res) => {
   try {
     const { houseId } = req.params;
+    const { userId } = res.locals;
 
-    const house = await getHouseDb(houseId);
+    const house = await getHouseDb(houseId, userId);
 
     if (!house) return res.status(400).json({ message: "House Not Found" });
 

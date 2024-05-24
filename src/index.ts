@@ -54,12 +54,12 @@ async function start(server: Server) {
       if (name === "token") token = value;
     });
     if (!token) {
-      ws.close(401, "unauthorized connection");
+      ws.close(1000, "unauthorized connection");
       return;
     }
     const validToken = verify(token, Env.JWT_SECRET) as JwtPayload;
     if (!validToken) {
-      ws.close(401, "unauthorized connection");
+      ws.close(1000, "unauthorized connection");
       return;
     }
     ws.user = {
@@ -74,13 +74,13 @@ async function start(server: Server) {
       switch (type) {
         case "join":
           if (!ws.user?.id) {
-            ws.close(401, "unauthorized connection");
+            ws.close(1000);
             return;
           }
 
           const validRequest = await checkUserHouse(ws.user?.id, houseId);
           if (!validRequest) {
-            ws.close(400, "House-User mismatch");
+            ws.close(1000);
             return;
           }
           if (!Connections.has(houseId)) {
@@ -90,11 +90,11 @@ async function start(server: Server) {
           break;
         case "message":
           if (!Connections.get(houseId).has(ws)) {
-            ws.close(401, "unauthorized connection");
+            ws.close(1000);
             return;
           }
           if (!ws.user?.id) {
-            ws.close(401, "unauthorized connection");
+            ws.close(1000);
             return;
           }
           const message = await postMessage(ws.user?.id, houseId, text);
@@ -102,12 +102,17 @@ async function start(server: Server) {
 
           clients.forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify(message));
+              client.send(JSON.stringify({ ...message, by: "other" }));
             }
           });
+          break;
+        default:
+          ws.close(1000);
       }
     });
-
+    ws.on("error", (error) => {
+      console.log(error);
+    });
     ws.on("close", () => {
       Connections.forEach((room: Set<WebSocket>) => {
         room.delete(ws);

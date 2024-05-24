@@ -78,7 +78,7 @@ export const checkHouseDb = async (houseName: string) => {
     throw error;
   }
 };
-export const getHouseDb = async (houseId: string) => {
+export const getHouseDb = async (houseId: string, userId: string) => {
   try {
     const house = await prisma.house.findUnique({
       where: {
@@ -98,7 +98,16 @@ export const getHouseDb = async (houseId: string) => {
       },
     });
 
-    return house;
+    if (!house) return;
+
+    const joinedHouse = await prisma.userHouse.findFirst({
+      where: {
+        houseId,
+        userId,
+      },
+    });
+
+    return { ...house, joined: joinedHouse ? true : false };
   } catch (error) {
     throw error;
   }
