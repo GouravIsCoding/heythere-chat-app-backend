@@ -26,7 +26,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://192.168.0.176:5173",
     credentials: true,
   })
 );
@@ -68,7 +68,7 @@ async function start(server: Server) {
       firstname: validToken.firstname,
       lastname: validToken.lastname,
     };
-
+    console.log("here");
     ws.on("message", async (message) => {
       const { type, houseId, text } = JSON.parse(message.toString("utf-8"));
       switch (type) {

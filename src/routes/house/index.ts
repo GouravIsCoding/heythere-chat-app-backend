@@ -36,11 +36,11 @@ router.get("/all", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/check", async (req, res) => {
+router.get("/check/:name", async (req, res) => {
   try {
-    checkHouse.parse(req.body);
+    checkHouse.parse(req.params);
 
-    const isHouse = await checkHouseDb(req.body.name);
+    const isHouse = await checkHouseDb(req.params.name);
 
     if (!isHouse) {
       return res.json({ message: "name not present!", housePresent: false });
