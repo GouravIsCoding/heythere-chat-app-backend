@@ -7,6 +7,7 @@ import {
   destroyHouseDb,
   getHouseDb,
   getHousesByPage,
+  searchHousesByName,
 } from "../../db/house";
 import { createHouse } from "../../validators/createHouse";
 import { destroyHouse } from "../../validators/destroyHouse";
@@ -14,6 +15,22 @@ import { authMiddleware } from "../../middleware/auth";
 import { checkHouse } from "../../validators/checkHouse";
 
 const router = Router();
+
+router.get("/search", authMiddleware, async (req, res) => {
+  try {
+    const name = req.query.name;
+    if (!name)
+      return res.status(400).json({ message: "name not provided or empty" });
+    const houses = await searchHousesByName(String(name));
+
+    return res.json({ message: "Houses Found.", houses });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+});
 
 router.get("/all", authMiddleware, async (req, res) => {
   try {

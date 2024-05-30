@@ -128,3 +128,20 @@ export const getHousesByPage = async (adminId: string, page: number) => {
     throw error;
   }
 };
+
+export const searchHousesByName = async (filter: string) => {
+  try {
+    const houses = await prisma.house.findMany({
+      where: {
+        name: {
+          contains: filter,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    return houses;
+  } catch (error) {
+    throw error;
+  }
+};
