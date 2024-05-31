@@ -61,6 +61,7 @@ router.post("/signin", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
+      expires: new Date(Date.now() + 30 * 1000 * 3600 * 24), // 30 days
     });
 
     return res.json({

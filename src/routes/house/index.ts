@@ -97,9 +97,10 @@ router.post("/add", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/remove", authMiddleware, async (req, res) => {
+router.delete("/remove/:houseId", authMiddleware, async (req, res) => {
   try {
-    const data = destroyHouse.parse(req.body);
+    const { houseId } = req.params;
+    const data = destroyHouse.parse({ houseId });
     const { userId } = res.locals;
     const house = await destroyHouseDb(userId, data.houseId);
     return res.json({ message: "House destroyed succesfully", ...house });
