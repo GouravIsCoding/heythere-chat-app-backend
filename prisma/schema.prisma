@@ -38,7 +38,7 @@ model House{
 model Message{
   id Int @id @default(autoincrement())
   text String
-  house House @relation(fields: [houseId],references: [id])
+  house House @relation(fields: [houseId],references: [id],onDelete: Cascade)
   houseId String
   sender User @relation(fields: [senderId],references: [id])
   senderId String 
