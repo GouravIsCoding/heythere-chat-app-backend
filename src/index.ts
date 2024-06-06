@@ -2,6 +2,7 @@ import path from "path";
 import authRouter from "./routes/auth/index";
 import houseRouter from "./routes/house/index";
 import memberRouter from "./routes/member/index";
+import messageRouter from "./routes/message/index";
 import { config } from "dotenv";
 config({ path: path.resolve(__dirname, "../.env") });
 import { WebSocketServer, WebSocket } from "ws";
@@ -36,6 +37,7 @@ app.use(cookieParser());
 app.use("/auth", authRouter);
 app.use("/house", houseRouter);
 app.use("/member", memberRouter);
+app.use("/message", messageRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
@@ -68,7 +70,6 @@ async function start(server: Server) {
       firstname: validToken.firstname,
       lastname: validToken.lastname,
     };
-    console.log("here");
     ws.on("message", async (message) => {
       const { type, houseId, text } = JSON.parse(message.toString("utf-8"));
       switch (type) {
@@ -102,7 +103,7 @@ async function start(server: Server) {
 
           clients.forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify({ ...message, by: "other" }));
+              client.send(JSON.stringify({ ...message }));
             }
           });
           break;

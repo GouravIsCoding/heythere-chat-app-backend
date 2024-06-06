@@ -5,7 +5,7 @@ import { singupDB } from "../../db/auth/signup";
 import { signinValidate } from "../../validators/signin";
 import { singinDB } from "../../db/auth/signin";
 import { comparePasswords, hashPassword } from "../../utils/bcrypt";
-import { sign, verify } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
 import { Env } from "../../config";
 
 const router = Router();
@@ -99,14 +99,18 @@ router.get("/status", async (req, res) => {
         .status(400)
         .json({ message: "not logged in!", authStatus: false });
 
-    const authStatus = verify(token, Env.JWT_SECRET);
+    const authStatus = verify(token, Env.JWT_SECRET) as JwtPayload;
 
     if (!authStatus)
       return res
         .status(400)
         .json({ message: "not logged in!", authStatus: false });
 
-    return res.json({ message: "Logged in", authStatus: true });
+    return res.json({
+      message: "Logged in",
+      authStatus: true,
+      userId: authStatus.id,
+    });
   } catch (error) {
     if (error instanceof ZodError) {
       return res.status(400).json({ error: error.errors[0]?.message });

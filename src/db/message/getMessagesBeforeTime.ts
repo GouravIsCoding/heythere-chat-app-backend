@@ -2,23 +2,26 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const postMessage = async (
-  userId: string,
-  houseId: string,
-  text: string
+const numberOfMessages = 10;
+
+export const getMessagesBeforeTime = async (
+  cursor: number | null,
+  houseId: string
 ) => {
   try {
-    const message = await prisma.message.create({
-      data: {
-        senderId: userId,
+    const messages = await prisma.message.findMany({
+      take: 10,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      where: {
         houseId,
-        text,
       },
+      orderBy: { timestamp: "desc" },
       select: {
         id: true,
+        text: true,
         houseId: true,
         timestamp: true,
-        text: true,
         sender: {
           select: {
             id: true,
@@ -29,7 +32,7 @@ export const postMessage = async (
         },
       },
     });
-    return message;
+    return messages;
   } catch (error) {
     throw error;
   }
