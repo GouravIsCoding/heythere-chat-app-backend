@@ -3,12 +3,31 @@ import { ZodError } from "zod";
 import { updateMemberInHouse } from "../../validators/updateMembers";
 import {
   addMemberToHouse,
+  getJoinedHousesDB,
   getMemberById,
   removeMemberFromHouse,
 } from "../../db/member";
 import { authMiddleware } from "../../middleware/auth";
 
 const router = Router();
+
+router.get("/joined", authMiddleware, async (req, res) => {
+  try {
+    const { userId } = res.locals.userId;
+
+    const houses = await getJoinedHousesDB(userId);
+
+    res.json({
+      message: "Joined Houses Found",
+      houses: houses.map((entry) => entry.house),
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+});
 
 router.get("/:memberId", authMiddleware, async (req, res) => {
   try {

@@ -52,3 +52,20 @@ export const removeMemberFromHouse = async (
     throw error;
   }
 };
+
+export const getJoinedHousesDB = async (userId: string) => {
+  try {
+    const houses = await prisma.userHouse.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        house: true,
+      },
+    });
+
+    return houses;
+  } catch (error) {
+    throw error;
+  }
+};

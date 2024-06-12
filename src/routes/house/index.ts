@@ -53,7 +53,7 @@ router.get("/all", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/check/:name", async (req, res) => {
+router.get("/check/:name", authMiddleware, async (req, res) => {
   try {
     checkHouse.parse(req.params);
 
