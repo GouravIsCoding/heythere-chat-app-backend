@@ -13,7 +13,7 @@ const router = Router();
 
 router.get("/joined", authMiddleware, async (req, res) => {
   try {
-    const { userId } = res.locals.userId;
+    const { userId } = res.locals;
 
     const houses = await getJoinedHousesDB(userId);
 

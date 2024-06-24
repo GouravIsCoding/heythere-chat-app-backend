@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { JwtPayload, verify } from "jsonwebtoken";
 import { Env } from "../../config";
 
-export const authMiddleware = async (
+export const authMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -14,7 +14,7 @@ export const authMiddleware = async (
     if (!verifiedToken)
       return res.status(400).json({ message: "not logged in!" });
     res.locals.userId = verifiedToken.id;
-    next();
+    return next();
   } catch (error) {
     throw error;
   }
