@@ -33,6 +33,7 @@ model House{
   members UserHouse[]
   description String
   messages Message[]
+  @@index([name])
 }
 
 model Message{
