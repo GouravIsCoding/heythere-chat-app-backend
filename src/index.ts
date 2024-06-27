@@ -27,7 +27,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://192.168.0.176:5173",
+    origin: Env.FRONTEND_LINK,
     credentials: true,
   })
 );
