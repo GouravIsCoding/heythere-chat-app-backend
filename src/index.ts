@@ -4,7 +4,9 @@ import houseRouter from "./routes/house/index";
 import memberRouter from "./routes/member/index";
 import messageRouter from "./routes/message/index";
 import { config } from "dotenv";
-config({ path: path.resolve(__dirname, "../.env") });
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  config({ path: path.resolve(__dirname, "../.env") });
+}
 import { WebSocketServer, WebSocket } from "ws";
 import cors from "cors";
 const PORT = 8080;
